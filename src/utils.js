@@ -1,6 +1,9 @@
 import * as constant from './constant'
+import { levels } from './levels'
 
 const HIGHSCORE_KEY = 'tower_best_score'
+const UNLOCKED_KEY = 'tower_unlocked_levels'
+const STARS_KEY = 'tower_stars'
 
 export const loadHighScore = () => {
   try {
@@ -23,6 +26,56 @@ export const saveHighScore = (score) => {
   }
 }
 
+export const loadUnlockedLevels = () => {
+  try {
+    return JSON.parse(localStorage.getItem(UNLOCKED_KEY)) || [1]
+  } catch (e) {
+    return [1]
+  }
+}
+
+export const saveUnlockedLevel = (levelId) => {
+  try {
+    const unlocked = loadUnlockedLevels()
+    if (!unlocked.includes(levelId)) {
+      unlocked.push(levelId)
+      localStorage.setItem(UNLOCKED_KEY, JSON.stringify(unlocked))
+    }
+  } catch (e) {}
+}
+
+export const loadStars = () => {
+  try {
+    return JSON.parse(localStorage.getItem(STARS_KEY)) || {}
+  } catch (e) {
+    return {}
+  }
+}
+
+export const saveStars = (levelId, stars) => {
+  try {
+    const allStars = loadStars()
+    const prev = allStars[levelId] || 0
+    if (stars > prev) {
+      allStars[levelId] = stars
+      localStorage.setItem(STARS_KEY, JSON.stringify(allStars))
+    }
+  } catch (e) {}
+}
+
+export const getLevelConfig = (levelId) => {
+  return levels.find(l => l.id === levelId) || levels[0]
+}
+
+export const calculateStars = (levelConfig, successCount, perfectCount) => {
+  if (successCount >= levelConfig.target) {
+    if (perfectCount >= levelConfig.target) return 3
+    if (perfectCount >= levelConfig.target * 0.8) return 2
+    return 1
+  }
+  return 0
+}
+
 export const checkMoveDown = engine =>
   (engine.checkTimeMovement(constant.moveDownMovement))
 
@@ -42,6 +95,10 @@ export const getAngleBase = (engine) => {
   const { hookAngle } = engine.getVariable(constant.gameUserOption)
   if (hookAngle) {
     return hookAngle(successCount, gameScore)
+  }
+  const levelId = engine.getVariable(constant.currentLevel)
+  if (levelId) {
+    return getLevelConfig(levelId).angle
   }
   if (engine.getVariable(constant.hardMode)) {
     return 90
@@ -63,26 +120,32 @@ export const getSwingBlockVelocity = (engine, time) => {
   if (hookSpeed) {
     return hookSpeed(successCount, gameScore)
   }
+  const levelId = engine.getVariable(constant.currentLevel)
   let hard
-  switch (true) {
-    case successCount < 1:
-      hard = 0
-      break
-    case successCount < 10:
-      hard = 1
-      break
-    case successCount < 20:
-      hard = 0.8
-      break
-    case successCount < 30:
-      hard = 0.7
-      break
-    default:
-      hard = 0.74
-      break
-  }
-  if (engine.getVariable(constant.hardMode)) {
-    hard = 1.1
+  if (levelId) {
+    const cfg = getLevelConfig(levelId)
+    hard = cfg.reverse ? -1 : 1
+  } else {
+    switch (true) {
+      case successCount < 1:
+        hard = 0
+        break
+      case successCount < 10:
+        hard = 1
+        break
+      case successCount < 20:
+        hard = 0.8
+        break
+      case successCount < 30:
+        hard = 0.7
+        break
+      default:
+        hard = 0.74
+        break
+    }
+    if (engine.getVariable(constant.hardMode)) {
+      hard = 1.1
+    }
   }
   return Math.sin(time / (200 / hard))
 }
@@ -95,20 +158,25 @@ export const getLandBlockVelocity = (engine, time) => {
     return landBlockSpeed(successCount, gameScore)
   }
   const { width } = engine
+  const levelId = engine.getVariable(constant.currentLevel)
   let hard
-  switch (true) {
-    case successCount < 5:
-      hard = 0
-      break
-    case successCount < 13:
-      hard = 0.001
-      break
-    case successCount < 23:
-      hard = 0.002
-      break
-    default:
-      hard = 0.003
-      break
+  if (levelId) {
+    hard = getLevelConfig(levelId).drift
+  } else {
+    switch (true) {
+      case successCount < 5:
+        hard = 0
+        break
+      case successCount < 13:
+        hard = 0.001
+        break
+      case successCount < 23:
+        hard = 0.002
+        break
+      default:
+        hard = 0.003
+        break
+    }
   }
   return Math.cos(time / 200) * hard * width
 }

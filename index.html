@@ -1,123 +1,318 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui"><title>Tower Building</title><link rel="icon" type="image/x-icon" href="./assets/favicon.png"><style>*{margin:0;padding:0}img{width:100%}html{background:#fff;height:100%}body{font-family:"Helvetica Neue",Arial,Helvetica,sans-serif;margin:0 auto;text-align:center;width:100%;height:100%;background:#f95240 url(assets/main-bg.png)}@media screen and (min-height:560px){html{font-size:100px}}@media screen and (min-height:640px){html{font-size:112.5px}}@media screen and (min-height:720px){html{font-size:125px}}@media screen and (min-height:800px){html{font-size:137.5px}}@media screen and (min-height:880px){html{font-size:150px}}@media screen and (min-height:960px){html{font-size:162.5px}}@media screen and (min-height:1040px){html{font-size:180px}}@media screen and (min-height:1200px){html{font-size:200px}}html{font-size:17.6vh}#canvas{position:fixed;left:0;top:0;right:0;bottom:0;margin:auto}a{text-decoration:none}li,ol,ul{list-style-type:none;padding:0;margin:0}.hide{display:none}.clear{clear:both}.loading{background-color:#f05a50;height:100%;width:100%}.loading .main{width:60%;margin:0 auto;color:#fff}.loading .main img{width:60%;margin:1rem auto 0}.loading .main .title{font-size:.3rem}.loading .main .text{font-size:.15rem}.loading .main .bar{height:.12rem;width:100%;border:3px solid #fff;border-radius:.6rem;margin:.1rem 0}.loading .main .bar .sub{height:.1rem;width:98%;margin:.008rem auto 0}.loading .main .bar .percent{height:100%;width:0;background-color:#fff;border-radius:.6rem}.loading .logo{position:absolute;bottom:.3rem;left:0;right:0}.loading .logo img{width:1rem}.content{height:100vh;margin:0 auto;position:relative}.landing .title{width:60%}.landing .logo{width:30%;position:absolute;right:.2rem;top:.2rem}.landing .action-2{position:absolute;bottom:.2rem;width:100%}.landing .start{width:65%}.slideTop{-webkit-animation:st 1s ease-in-out;animation:st 1s ease-in-out}@-webkit-keyframes st{0%{transform:translateZ(0)}100%{transform:translate3d(0,-100%,0)}}@keyframes st{0%{transform:translateZ(0)}100%{transform:translate3d(0,-100%,0)}}.slideBottom{-webkit-animation:sb 1s ease-in-out;animation:sb 1s ease-in-out}@-webkit-keyframes sb{0%{transform:translateZ(0)}100%{transform:translate3d(0,200%,0)}}@keyframes sb{0%{transform:translateZ(0)}100%{transform:translate3d(0,200%,0)}}.swing{-webkit-animation:sw 2s ease-in-out alternate infinite;animation:sw 2s ease-in-out alternate infinite}@-webkit-keyframes sw{0%{transform:rotate(5deg);transform-origin:top center}100%{transform:rotate(-5deg);transform-origin:top center}}@keyframes sw{0%{transform:rotate(5deg);transform-origin:top center}100%{transform:rotate(-5deg);transform-origin:top center}}.modal .mask{background-color:#000;opacity:.6;position:fixed;height:100%;width:100%;top:0;left:0}.modal .modal-content{position:fixed;height:100%;width:90%;margin-top:.3rem;top:0}.modal .main{width:85%;margin:0 auto}.modal .container{position:relative}.modal .bg{width:100%;position:absolute;top:0;left:0}.modal .modal-main{width:100%;position:absolute;top:0;left:0;margin-top:-.4rem}.modal .over-img{width:80%;margin:.8rem auto 0}.modal .over-score{margin-top:-.2rem;font-size:.5rem;color:#ff735c;text-shadow:-2px -2px 0 #fff,2px -2px 0 #fff,-2px 2px 0 #fff,2px 2px 0 #fff}.modal .tip{font-size:.16rem;color:#9b724e}.modal .over-button-b{width:70%;margin:.1rem auto 0}.wxShare{background:#000;position:absolute;top:0;left:0;width:100%;height:100%;z-index:11;opacity:.9}.wxShare img{width:50%;float:right;margin:10px 10px 0 0}@font-face{font-family:wenxue;src:url(assets/wenxue.eot);src:url(assets/wenxue.eot),url(assets/wenxue.woff),url(assets/wenxue.ttf),url(assets/wenxue.svg)}.font-wenxue{font-family:wenxue}</style></head><body><canvas id="canvas" class="hide"></canvas><div class="content"><div class="loading"><div class="main"><img src="./assets/main-loading.gif"><div class="progress"><div class="title font-wenxue">0%</div><div class="bar"><div class="sub"><div class="percent"></div></div></div><div class="text">Loading...</div></div></div></div><div class="landing hide"><div class="action-1"><img src="./assets/main-index-title.png" class="title swing"></div><div class="action-2"><img id="start" src="./assets/main-index-start.png" class="start"></div></div><div id="modal" class="modal hide"><div class="mask"></div><div class="js-modal-content modal-content"><div class="main"><div class="container"><img src="./assets/main-modal-bg.png" class="bg"><div class="modal-main"><div id="over-modal" class="hide js-modal-card"><img src="./assets/main-modal-over.png" class="over-img"><div id="score" class="over-score font-wenxue"></div><div id="over-zero" class="hide"><div class="tip"><p>Try Again!</p><img src="./assets/main-modal-again-b.png" class="over-button-b js-reload"><img src="./assets/main-modal-invite-b.png" class="over-button-b js-invite"></div></div></div></div></div></div></div></div><div class="wxShare hide"><img src="./assets/main-share-icon.png"></div></div><script src="./dist/main.js"></script><script src="./assets/zepto-1.1.6.min.js"></script><script>var domReady, loadFinish, canvasReady, loadError, gameStart, game, score, successCount
-  // init window height and width
-  var gameWidth = window.innerWidth
-  var gameHeight = window.innerHeight
-  var ratio = 1.5
-  if (gameHeight / gameWidth < ratio) {
-    gameWidth = Math.ceil(gameHeight / ratio)
-  }
-  $('.content').css({ "height": gameHeight + "px", "width": gameWidth + "px" })
-  $('.js-modal-content').css({ "width": gameWidth + "px" })
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
+  <title>Tower Building</title>
+  <link rel="icon" type="image/x-icon" href="./assets/favicon.png">
+  <style>
+    *{margin:0;padding:0}
+    img{width:100%}
+    html{background:#fff;height:100%}
+    body{font-family:"Helvetica Neue",Arial,Helvetica,sans-serif;margin:0 auto;text-align:center;width:100%;height:100%;background:#f95240 url(assets/main-bg.png)}
+    @media screen and (min-height:560px){html{font-size:100px}}
+    @media screen and (min-height:640px){html{font-size:112.5px}}
+    @media screen and (min-height:720px){html{font-size:125px}}
+    @media screen and (min-height:800px){html{font-size:137.5px}}
+    @media screen and (min-height:880px){html{font-size:150px}}
+    @media screen and (min-height:960px){html{font-size:162.5px}}
+    @media screen and (min-height:1040px){html{font-size:180px}}
+    @media screen and (min-height:1200px){html{font-size:200px}}
+    html{font-size:17.6vh}
+    #canvas{position:fixed;left:0;top:0;right:0;bottom:0;margin:auto}
+    a{text-decoration:none}
+    li,ol,ul{list-style-type:none;padding:0;margin:0}
+    .hide{display:none}
+    .clear{clear:both}
+    .loading{background-color:#f05a50;height:100%;width:100%}
+    .loading .main{width:60%;margin:0 auto;color:#fff}
+    .loading .main img{width:60%;margin:1rem auto 0}
+    .loading .main .title{font-size:.3rem}
+    .loading .main .text{font-size:.15rem}
+    .loading .main .bar{height:.12rem;width:100%;border:3px solid #fff;border-radius:.6rem;margin:.1rem 0}
+    .loading .main .bar .sub{height:.1rem;width:98%;margin:.008rem auto 0}
+    .loading .main .bar .percent{height:100%;width:0;background-color:#fff;border-radius:.6rem}
+    .loading .logo{position:absolute;bottom:.3rem;left:0;right:0}
+    .loading .logo img{width:1rem}
+    .content{height:100vh;margin:0 auto;position:relative}
+    .landing .title{width:60%}
+    .landing .logo{width:30%;position:absolute;right:.2rem;top:.2rem}
+    .landing .action-2{position:absolute;bottom:.2rem;width:100%}
+    .landing .start{width:65%}
+    .slideTop{-webkit-animation:slideTop .95s forwards;animation:slideTop .95s forwards}
+    .slideBottom{-webkit-animation:slideBottom .95s forwards;animation:slideBottom .95s forwards}
+    @-webkit-keyframes slideTop{from{-webkit-transform:translateY(0)}to{-webkit-transform:translateY(-100%)}}
+    @keyframes slideTop{from{transform:translateY(0)}to{transform:translateY(-100%)}}
+    @-webkit-keyframes slideBottom{from{-webkit-transform:translateY(0)}to{-webkit-transform:translateY(100%)}}
+    @keyframes slideBottom{from{transform:translateY(0)}to{transform:translateY(100%)}}
+    .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:none;z-index:10}
+    .modal .modal-content{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+    .modal .modal-bg{width:100%}
+    .modal .modal-score{position:absolute;top:35%;width:100%;font-size:.4rem;color:#fff;font-weight:bold}
+    .modal .modal-btn-again{position:absolute;bottom:18%;width:40%;left:10%}
+    .modal .modal-btn-invite{position:absolute;bottom:18%;width:40%;right:10%}
+    .wxShare{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);display:none;z-index:20}
+    .wxShare .share-icon{position:absolute;top:.2rem;right:.2rem;width:1rem}
 
-  // loading animation
-  function hideLoading() {
-    if (domReady && canvasReady) {
-      $('#canvas').show()
-      loadFinish = true
-      setTimeout(function () {
-        $('.loading').hide()
-        $('.landing').show()
-      }, 1000)
+    #level-select{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,#1a0533 0%,#2d1b69 50%,#0f0c29 100%);display:none;z-index:30;overflow-y:auto}
+    .level-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:.15rem;padding:.3rem .2rem}
+    .level-card{width:28%;aspect-ratio:1;border-radius:.15rem;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s;position:relative}
+    .level-card:active{transform:scale(0.95)}
+    .level-card.unlocked{background:linear-gradient(135deg,#4a90d9,#357abd);border:3px solid #6ab0ff;box-shadow:0 4px 15px rgba(74,144,217,0.4)}
+    .level-card.locked{background:rgba(50,50,50,0.8);border:3px solid #444;opacity:0.5}
+    .level-card.completed{background:linear-gradient(135deg,#f39c12,#e67e22);border:3px solid #ffd700;box-shadow:0 4px 15px rgba(243,156,18,0.4)}
+    .level-num{font-size:.35rem;font-weight:bold;color:#fff}
+    .level-name{font-size:.12rem;color:rgba(255,255,255,0.8);margin-top:.02rem}
+    .level-stars{font-size:.18rem;margin-top:.03rem;color:#ffd700}
+    .level-lock{font-size:.4rem;color:#666}
+    .level-desc{font-size:.1rem;color:rgba(255,255,255,0.6);margin-top:.02rem}
+    .level-header{text-align:center;padding:.3rem 0 .1rem;color:#fff}
+    .level-header h2{font-size:.25rem;margin-bottom:.05rem}
+    .level-header p{font-size:.13rem;color:rgba(255,255,255,0.6)}
+    .level-back{position:absolute;top:.15rem;left:.15rem;font-size:.15rem;color:#fff;cursor:pointer;z-index:31;background:rgba(0,0,0,0.3);padding:.08rem .15rem;border-radius:.1rem}
+    .level-back:active{opacity:0.7}
+  </style>
+</head>
+<body>
+  <div class="content">
+    <div class="loading">
+      <div class="main">
+        <img src="assets/main-loading-logo.png">
+        <div class="title">0%</div>
+        <div class="text">Loading...</div>
+        <div class="bar"><div class="sub"><div class="percent"></div></div></div>
+      </div>
+      <div class="logo"><img src="assets/main-loading.gif"></div>
+    </div>
+    <div class="landing" style="display:none">
+      <img class="title" src="assets/main-index-title.png">
+      <img class="logo" src="assets/main-index-logo.png">
+      <div class="action-1"></div>
+      <div class="action-2">
+        <img class="start" id="start" src="assets/main-index-start.png">
+      </div>
+    </div>
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <img class="modal-bg" src="assets/main-modal-bg.png">
+      <div class="modal-score" id="modal-score">0</div>
+      <img class="modal-btn-again js-reload" src="assets/main-modal-again-b.png">
+      <img class="modal-btn-invite js-invite" src="assets/main-modal-invite-b.png">
+    </div>
+  </div>
+
+  <div id="over-modal" class="modal" style="display:none">
+    <div class="modal-content">
+      <img class="modal-bg" src="assets/main-modal-over.png">
+      <div class="modal-score" id="over-score">0</div>
+      <img class="modal-btn-again js-reload" src="assets/main-modal-again-b.png">
+      <img class="modal-btn-invite js-invite" src="assets/main-modal-invite-b.png">
+    </div>
+  </div>
+
+  <div id="level-select">
+    <div class="level-back" id="level-back">← BACK</div>
+    <div class="level-header">
+      <h2>CHOOSE YOUR CHALLENGE</h2>
+      <p>Complete levels to unlock new challenges</p>
+    </div>
+    <div class="level-grid" id="level-grid"></div>
+  </div>
+
+  <div class="wxShare">
+    <img class="share-icon" src="assets/main-share-icon.png">
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/zepto@1.1.6/dist/zepto.min.js"></script>
+  <script src="./dist/main.js"></script>
+  <script>
+    var game, gameStart = false, domReady = false, canvasReady = false, loadFinish = false, loadError = false
+    var score = 0, successCount = 0
+
+    var gameWidth = window.innerWidth
+    var gameHeight = window.innerHeight
+    var ratio = 1.5
+    if (gameHeight / gameWidth < ratio) {
+      gameWidth = Math.ceil(gameHeight / ratio)
     }
-  }
+    $('.content').css({ "height": gameHeight + "px", "width": gameWidth + "px" })
 
-  function updateLoading(status) {
-    var success = status.success
-    var total = status.total
-    var failed = status.failed
-    if (failed > 0 && !loadError) {
-      loadError = true
-      alert('Network error... Please try again.')
-      return
+    function hideLoading() {
+      if (domReady && canvasReady) {
+        $('#canvas').show()
+        loadFinish = true
+        setTimeout(function () {
+          $('.loading').hide()
+          $('.landing').show()
+        }, 1000)
+      }
     }
-    var percent = parseInt((success / total) * 100);
-    if (percent === 100 && !canvasReady) {
-      canvasReady = true
-      hideLoading()
+
+    function updateLoading(status) {
+      var success = status.success
+      var total = status.total
+      var failed = status.failed
+      if (failed > 0 && !loadError) {
+        loadError = true
+        alert('Network error... Please try again.')
+        return
+      }
+      var percent = parseInt((success / total) * 100)
+      if (percent === 100 && !canvasReady) {
+        canvasReady = true
+        hideLoading()
+      }
+      percent = percent > 98 ? 98 : percent
+      percent = percent + '%'
+      $('.loading .title').text(percent)
+      $('.loading .percent').css({ 'width': percent })
     }
-    percent = percent > 98 ? 98 : percent
-    percent = percent + '%'
-    $('.loading .title').text(percent);
-    $('.loading .percent').css({
-      'width': percent
-    })
-  }
 
-  function overShowOver() {
-    $('#modal').show()
-    $('#over-modal').show()
-    $('#over-zero').show()
-  }
-
-  // game customization options
-  const option = {
-    width: gameWidth,
-    height: gameHeight,
-    canvasId: 'canvas',
-    soundOn: true,
-    setGameScore: function (s) {
-      score = s
-    },
-    setGameSuccess: function (s) {
-      successCount = s
-    },
-    setGameFailed: function (f) {
-      $('#score').text(score)
-      if (f >= 3) overShowOver()
+    function overShowOver() {
+      $('#over-modal').show()
+      $('#over-score').text(score)
     }
-  }
 
-  // game init with option
-  function gameReady() {
-    game = TowerGame(option)
-    game.load(function () {
-      game.init()
-      setTimeout(function () {
-        game.playBgm()
-      })
-    }, updateLoading)
-  }
+    var levelsConfig = [
+      { id: 1, name: 'Premiers Pas', desc: 'Apprends les bases', target: 5 },
+      { id: 2, name: 'Vent Fort', desc: 'Le bloc dérive pendant le drop', target: 8 },
+      { id: 3, name: 'Precision', desc: 'Seuls les parfaits comptent', target: 5 },
+      { id: 4, name: 'Blocs Mini', desc: 'Les blocs sont plus petits', target: 10 },
+      { id: 5, name: 'Chute Libre', desc: 'Le bloc accélère très vite', target: 8 },
+      { id: 6, name: 'Combo Master', desc: 'Atteins x5 de combo', target: 8 },
+      { id: 7, name: 'Nuit', desc: 'Visibilité réduite', target: 8 },
+      { id: 8, name: 'Inversé', desc: 'Le pendule s\'inverse', target: 10 },
+      { id: 9, name: 'Double', desc: '2 blocs swingent ensemble', target: 5 },
+      { id: 10, name: 'Boss', desc: 'Mini + Nuit + Vent + Inversé', target: 8 }
+    ]
 
-  var isWechat = navigator.userAgent.toLowerCase().indexOf("micromessenger") !== -1
-  if (isWechat) {
-    document.addEventListener("WeixinJSBridgeReady", gameReady, false)
-  } else {
-    gameReady()
-  }
+    function loadUnlocked() {
+      try { return JSON.parse(localStorage.getItem('tower_unlocked_levels')) || [1] } catch(e) { return [1] }
+    }
 
-  function indexHide() {
-    $('.landing .action-1').addClass('slideTop')
-    $('.landing .action-2').addClass('slideBottom')
-    setTimeout(function () {
+    function loadStars() {
+      try { return JSON.parse(localStorage.getItem('tower_stars')) || {} } catch(e) { return {} }
+    }
+
+    function saveUnlocked(id) {
+      var u = loadUnlocked()
+      if (u.indexOf(id) === -1) { u.push(id); localStorage.setItem('tower_unlocked_levels', JSON.stringify(u)) }
+    }
+
+    function renderLevelSelect() {
+      var unlocked = loadUnlocked()
+      var stars = loadStars()
+      var html = ''
+      for (var i = 0; i < levelsConfig.length; i++) {
+        var l = levelsConfig[i]
+        var isUnlocked = unlocked.indexOf(l.id) > -1
+        var starsCount = stars[l.id] || 0
+        var cls = isUnlocked ? (starsCount > 0 ? 'completed' : 'unlocked') : 'locked'
+        html += '<div class="level-card ' + cls + '" data-level="' + l.id + '">'
+        if (isUnlocked) {
+          html += '<div class="level-num">' + l.id + '</div>'
+          html += '<div class="level-name">' + l.name + '</div>'
+          html += '<div class="level-desc">' + l.desc + '</div>'
+          var starsHtml = ''
+          for (var s = 0; s < 3; s++) { starsHtml += s < starsCount ? '★' : '☆' }
+          html += '<div class="level-stars">' + starsHtml + '</div>'
+        } else {
+          html += '<div class="level-lock">🔒</div>'
+          html += '<div class="level-name">' + l.name + '</div>'
+        }
+        html += '</div>'
+      }
+      $('#level-grid').html(html)
+    }
+
+    window.showLevelSelect = function() {
+      renderLevelSelect()
+      $('#level-select').show()
       $('.landing').hide()
-    }, 950)
-  }
+    }
 
-  // click event
-  $('#start').on('click', function () {
-    if (gameStart) return
-    gameStart = true
-    setTimeout(function () {
+    window.startLevel = function(levelId) {
+      $('#level-select').hide()
+      gameStart = true
       game.playBgm()
+      setTimeout(function() { game.start(levelId) }, 100)
+    }
+
+    var option = {
+      width: gameWidth,
+      height: gameHeight,
+      canvasId: 'canvas',
+      soundOn: true,
+      setGameScore: function(s) { score = s },
+      setGameSuccess: function(s) { successCount = s },
+      setGameFailed: function(f) {
+        $('#score').text(score)
+        var currentLevel = game.getVariable('CURRENT_LEVEL')
+        if (currentLevel) {
+          if (f >= 3) overShowOver()
+        } else {
+          if (f >= 3) overShowOver()
+        }
+      }
+    }
+
+    function gameReady() {
+      game = TowerGame(option)
+      game.load(function() {
+        game.init()
+        setTimeout(function() { game.playBgm() })
+      }, updateLoading)
+    }
+
+    var isWechat = navigator.userAgent.toLowerCase().indexOf("micromessenger") !== -1
+    if (isWechat) {
+      document.addEventListener("WeixinJSBridgeReady", gameReady, false)
+    } else {
+      gameReady()
+    }
+
+    function indexHide() {
+      $('.landing .action-1').addClass('slideTop')
+      $('.landing .action-2').addClass('slideBottom')
+      setTimeout(function() { $('.landing').hide() }, 950)
+    }
+
+    $('#start').on('click', function() {
+      if (gameStart) return
+      showLevelSelect()
     })
-    indexHide()
-    setTimeout(game.start, 400)
-  })
 
-  $('.js-reload').on('click', function () {
-    window.location.href = window.location.href + '?s=' + (+new Date())
-  })
+    $(document).on('click', '.level-card.unlocked, .level-card.completed', function() {
+      var levelId = parseInt($(this).data('level'))
+      startLevel(levelId)
+    })
 
-  $('.js-invite').on('click', function () {
-    $('.wxShare').show()
-  })
+    $('#level-back').on('click', function() {
+      $('#level-select').hide()
+      $('.landing').show()
+      gameStart = false
+    })
 
-  $('.wxShare').on('click', function () {
-    $('.wxShare').hide()
-  })
+    $('.js-reload').on('click', function() {
+      var currentLevel = game.getVariable('CURRENT_LEVEL')
+      if (currentLevel) {
+        $('#over-modal').hide()
+        startLevel(currentLevel)
+      } else {
+        window.location.href = window.location.href + '?s=' + (+new Date())
+      }
+    })
 
-  // listener
-  window.addEventListener('load', function () {
-    domReady = true
-    hideLoading()
-  }, false);</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-YCWZ8ZDCH2"></script><script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-YCWZ8ZDCH2")</script></body></html>
+    $('.js-invite').on('click', function() { $('.wxShare').show() })
+    $('.wxShare').on('click', function() { $('.wxShare').hide() })
+
+    window.addEventListener('load', function() {
+      domReady = true
+      hideLoading()
+    }, false)
+  </script>
+</body>
+</html>

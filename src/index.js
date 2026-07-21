@@ -1,5 +1,5 @@
 import { Engine, Instance } from 'cooljs'
-import { touchEventHandler, loadHighScore } from './utils'
+import { touchEventHandler, loadHighScore, getLevelConfig } from './utils'
 import { background } from './background'
 import { lineAction, linePainter } from './line'
 import { cloudAction, cloudPainter } from './cloud'
@@ -89,7 +89,29 @@ window.TowerGame = (option = {}) => {
   game.addKeyDownListener('enter', () => {
     if (game.debug) game.togglePaused()
   })
-  game.touchStartListener = () => {
+  game.touchStartListener = (e) => {
+    const levelCompleted = game.getVariable(constant.levelCompleted, false)
+    if (levelCompleted && game._victoryBtns) {
+      const rect = e.target.getBoundingClientRect()
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left
+      const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top
+      const btns = game._victoryBtns
+      if (btns.menu && x >= btns.menu.x && x <= btns.menu.x + btns.menu.w
+        && y >= btns.menu.y && y <= btns.menu.y + btns.menu.h) {
+        game.setVariable(constant.levelCompleted, false)
+        game.setVariable(constant.gameStartNow, false)
+        if (typeof window.showLevelSelect === 'function') window.showLevelSelect()
+        return
+      }
+      if (btns.next && x >= btns.next.x && x <= btns.next.x + btns.next.w
+        && y >= btns.next.y && y <= btns.next.y + btns.next.h) {
+        game.setVariable(constant.levelCompleted, false)
+        const nextLevel = game.getVariable(constant.currentLevel) + 1
+        if (typeof window.startLevel === 'function') window.startLevel(nextLevel)
+        return
+      }
+      return
+    }
     touchEventHandler(game)
   }
 
@@ -101,7 +123,32 @@ window.TowerGame = (option = {}) => {
     game.pauseAudio('bgm')
   }
 
-  game.start = () => {
+  game.start = (levelId) => {
+    game.setVariable(constant.successCount, 0)
+    game.setVariable(constant.failedCount, 0)
+    game.setVariable(constant.gameScore, 0)
+    game.setVariable(constant.blockCount, 0)
+    game.setVariable(constant.perfectCount, 0)
+    game.setVariable(constant.comboCount, 0)
+    game.setVariable(constant.comboTimer, 0)
+    game.setVariable(constant.hardMode, false)
+    game.setVariable(constant.levelPerfects, 0)
+    game.setVariable(constant.levelCompleted, false)
+    game.setVariable(constant.gameStartNow, false)
+
+    if (levelId) {
+      game.setVariable(constant.currentLevel, levelId)
+      const cfg = getLevelConfig(levelId)
+      game.setVariable(constant.blockWidth, game.width * 0.25 * cfg.blockScale)
+      game.setVariable(constant.blockHeight, game.getVariable(constant.blockWidth) * 0.71)
+      game.setVariable(constant.ropeHeight, game.height * 0.4)
+    } else {
+      game.setVariable(constant.currentLevel, 0)
+      game.setVariable(constant.blockWidth, game.width * 0.25)
+      game.setVariable(constant.blockHeight, game.getVariable(constant.blockWidth) * 0.71)
+      game.setVariable(constant.ropeHeight, game.height * 0.4)
+    }
+
     const tutorial = new Instance({
       name: 'tutorial',
       action: tutorialAction,

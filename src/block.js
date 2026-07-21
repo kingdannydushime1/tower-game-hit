@@ -5,7 +5,8 @@ import {
   touchEventHandler,
   addSuccessCount,
   addFailedCount,
-  addScore
+  addScore,
+  getLevelConfig
 } from './utils'
 import * as constant from './constant'
 
@@ -66,8 +67,10 @@ export const blockAction = (instance, engine, time) => {
   if (!i.ready) {
     i.ready = true
     i.status = constant.swing
-    instance.updateWidth(engine.getVariable(constant.blockWidth))
-    instance.updateHeight(engine.getVariable(constant.blockHeight))
+    const levelId = engine.getVariable(constant.currentLevel)
+    const scale = levelId ? getLevelConfig(levelId).blockScale : 1
+    instance.updateWidth(engine.getVariable(constant.blockWidth) * scale)
+    instance.updateHeight(engine.getVariable(constant.blockHeight) * scale)
     instance.x = engine.width / 2
     instance.y = ropeHeight * -1.5
   }
@@ -125,9 +128,23 @@ export const blockAction = (instance, engine, time) => {
           break
         case 4:
         case 5:
+          const levelId = engine.getVariable(constant.currentLevel)
+          const levelCfg = levelId ? getLevelConfig(levelId) : null
+          if (levelCfg && levelCfg.perfectOnly && collision !== 5) {
+            i.status = constant.rotateLeft
+            instance.y = blockY
+            instance.outwardOffset = (line.x + instance.calWidth) - instance.x
+            instance.originOutwardAngle = Math.atan(instance.height / instance.outwardOffset)
+            instance.originHypotenuse = Math.sqrt((instance.height ** 2) + (instance.outwardOffset ** 2))
+            engine.playAudio('rotate')
+            break
+          }
           i.status = constant.land
           const lastSuccessCount = engine.getVariable(constant.successCount)
           addSuccessCount(engine)
+          if (collision === 5) {
+            engine.setVariable(constant.levelPerfects, (engine.getVariable(constant.levelPerfects, 0) + 1))
+          }
           engine.setTimeMovement(constant.moveDownMovement, 500)
           if (lastSuccessCount === 10 || lastSuccessCount === 15) {
             engine.setTimeMovement(constant.lightningMovement, 150)
@@ -136,7 +153,6 @@ export const blockAction = (instance, engine, time) => {
           line.y = blockY
           line.x = i.x - i.calWidth
           line.collisionX = line.x + i.width
-          // 作弊检测 超出左边或右边1／3
           const cheatWidth = i.width * 0.3
           if (i.x > engine.width - (cheatWidth * 2)
             || i.x < -cheatWidth) {
@@ -149,6 +165,14 @@ export const blockAction = (instance, engine, time) => {
           } else {
             addScore(engine)
             engine.playAudio('drop')
+          }
+          if (levelCfg) {
+            const currentSuccess = engine.getVariable(constant.successCount)
+            if (currentSuccess >= levelCfg.target) {
+              engine.setVariable(constant.levelCompleted, true)
+              engine.setVariable(constant.gameStartNow, false)
+              engine.playAudio('game-over')
+            }
           }
           break
         default:
