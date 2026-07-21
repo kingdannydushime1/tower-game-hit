@@ -4,7 +4,9 @@ import {
   checkMoveDown,
   getMoveDownValue,
   drawYellowString,
-  getAngleBase
+  getAngleBase,
+  loadHighScore,
+  getComboMultiplier
 } from './utils'
 import { addFlight } from './flight'
 import * as constant from './constant'
@@ -71,6 +73,41 @@ export const endAnimate = (engine) => {
       zoomedHeartHeight
     )
     ctx.restore()
+  }
+  const best = engine.getVariable(constant.highScore, 0)
+  if (best > 0) {
+    drawYellowString(engine, {
+      string: `BEST ${best}`,
+      size: engine.width * 0.035,
+      x: engine.width * 0.5,
+      y: engine.width * 0.23,
+      textAlign: 'center',
+      fontName: 'Arial',
+      fontWeight: 'bold'
+    })
+  }
+
+  const combo = engine.getVariable(constant.comboCount, 0)
+  const comboTimer = engine.getVariable(constant.comboTimer, 0)
+  if (combo >= 5 && comboTimer > 0) {
+    const elapsed = Date.now() - comboTimer
+    if (elapsed < 1500) {
+      const progress = elapsed / 1500
+      const scale = 1 + Math.sin(progress * Math.PI) * 0.3
+      const alpha = 1 - progress
+      const multiplier = getComboMultiplier(combo)
+      const colors = ['', '', '', '#FFD700', '#FF8C00', '#FF4500', '#FF00FF']
+      const color = colors[Math.min(multiplier, colors.length - 1)] || '#FFD700'
+      ctx.save()
+      ctx.globalAlpha = alpha
+      ctx.font = `bold ${engine.width * 0.1 * scale}px Arial`
+      ctx.textAlign = 'center'
+      ctx.fillStyle = color
+      ctx.shadowColor = color
+      ctx.shadowBlur = 20 * scale
+      ctx.fillText(`x${multiplier}`, engine.width * 0.5, engine.height * 0.45)
+      ctx.restore()
+    }
   }
 }
 

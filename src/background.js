@@ -37,9 +37,10 @@ export const backgroundImg = (engine) => {
 }
 
 const getLinearGradientColorRgb = (colorArr, colorIndex, proportion) => {
-  const currentIndex = colorIndex + 1 >= colorArr.length ? colorArr.length - 1 : colorIndex
+  const maxIndex = colorArr.length - 1
+  const currentIndex = Math.max(0, Math.min(colorIndex, maxIndex))
   const colorCurrent = colorArr[currentIndex]
-  const nextIndex = currentIndex + 1 >= colorArr.length - 1 ? currentIndex : currentIndex + 1
+  const nextIndex = Math.max(0, Math.min(currentIndex + 1, maxIndex))
   const colorNext = colorArr[nextIndex]
   const calRgbValue = (index) => {
     const current = colorCurrent[index]
@@ -67,7 +68,8 @@ export const backgroundLinearGradient = (engine) => {
       , offsetHeight + (getMoveDownValue(engine) * 1.5)
     )
   }
-  const colorIndex = parseInt(offsetHeight / engine.height, 10)
+  const maxColorIndex = colorArr.length - 2
+  const colorIndex = Math.min(parseInt(offsetHeight / engine.height, 10), maxColorIndex)
   const calOffsetHeight = offsetHeight % engine.height
   const proportion = calOffsetHeight / engine.height
   const colorBase = getLinearGradientColorRgb(colorArr, colorIndex, proportion)

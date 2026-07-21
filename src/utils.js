@@ -1,5 +1,28 @@
 import * as constant from './constant'
 
+const HIGHSCORE_KEY = 'tower_best_score'
+
+export const loadHighScore = () => {
+  try {
+    return parseInt(localStorage.getItem(HIGHSCORE_KEY), 10) || 0
+  } catch (e) {
+    return 0
+  }
+}
+
+export const saveHighScore = (score) => {
+  try {
+    const best = loadHighScore()
+    if (score > best) {
+      localStorage.setItem(HIGHSCORE_KEY, score)
+      return score
+    }
+    return best
+  } catch (e) {
+    return score
+  }
+}
+
 export const checkMoveDown = engine =>
   (engine.checkTimeMovement(constant.moveDownMovement))
 
@@ -134,6 +157,7 @@ export const addFailedCount = (engine) => {
   const failed = lastFailedCount + 1
   engine.setVariable(constant.failedCount, failed)
   engine.setVariable(constant.perfectCount, 0)
+  engine.setVariable(constant.comboCount, 0)
   if (setGameFailed) setGameFailed(failed)
   if (failed >= 3) {
     engine.pauseAudio('bgm')
@@ -142,14 +166,36 @@ export const addFailedCount = (engine) => {
   }
 }
 
+export const getComboMultiplier = (combo) => {
+  if (combo >= 20) return 5
+  if (combo >= 15) return 4
+  if (combo >= 10) return 3
+  if (combo >= 5) return 2
+  return 1
+}
+
 export const addScore = (engine, isPerfect) => {
   const { setGameScore, successScore, perfectScore } = engine.getVariable(constant.gameUserOption)
   const lastPerfectCount = engine.getVariable(constant.perfectCount, 0)
   const lastGameScore = engine.getVariable(constant.gameScore)
   const perfect = isPerfect ? lastPerfectCount + 1 : 0
-  const score = lastGameScore + (successScore || 25) + ((perfectScore || 25) * perfect)
+
+  let combo = engine.getVariable(constant.comboCount, 0)
+  if (isPerfect) {
+    combo += 1
+  } else {
+    combo = 0
+  }
+  engine.setVariable(constant.comboCount, combo)
+  engine.setVariable(constant.comboTimer, Date.now())
+
+  const multiplier = getComboMultiplier(combo)
+  const baseScore = (successScore || 25) + ((perfectScore || 25) * perfect)
+  const score = lastGameScore + (baseScore * multiplier)
   engine.setVariable(constant.gameScore, score)
   engine.setVariable(constant.perfectCount, perfect)
+  const newBest = saveHighScore(score)
+  engine.setVariable(constant.highScore, newBest)
   if (setGameScore) setGameScore(score)
 }
 

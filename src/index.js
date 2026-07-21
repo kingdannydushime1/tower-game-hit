@@ -1,5 +1,5 @@
 import { Engine, Instance } from 'cooljs'
-import { touchEventHandler } from './utils'
+import { touchEventHandler, loadHighScore } from './utils'
 import { background } from './background'
 import { lineAction, linePainter } from './line'
 import { cloudAction, cloudPainter } from './cloud'
@@ -54,7 +54,11 @@ window.TowerGame = (option = {}) => {
   game.setVariable(constant.successCount, 0)
   game.setVariable(constant.failedCount, 0)
   game.setVariable(constant.gameScore, 0)
+  game.setVariable(constant.comboCount, 0)
+  game.setVariable(constant.comboTimer, 0)
   game.setVariable(constant.hardMode, false)
+  game.setVariable(constant.flightCount, 0)
+  game.setVariable(constant.highScore, loadHighScore())
   game.setVariable(constant.gameUserOption, option)
   for (let i = 1; i <= 4; i += 1) {
     const cloud = new Instance({

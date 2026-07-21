@@ -1,11 +1,14 @@
 export const gameStartNow = 'GAME_START_NOW'
 export const gameUserOption = 'GAME_USER_OPTION'
 export const hardMode = 'HARD_MODE'
+export const highScore = 'HIGH_SCORE'
 
 export const successCount = 'SUCCESS_COUNT'
 export const failedCount = 'FAILED_COUNT'
 export const perfectCount = 'PERFECT_COUNT'
 export const gameScore = 'GAME_SCORE'
+export const comboCount = 'COMBO_COUNT'
+export const comboTimer = 'COMBO_TIMER'
 
 export const hookDown = 'HOOK_DOWN'
 export const hookUp = 'HOOK_UP'
