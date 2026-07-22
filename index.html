@@ -19,12 +19,12 @@
     @media screen and (min-height:1040px){html{font-size:180px}}
     @media screen and (min-height:1200px){html{font-size:200px}}
     html{font-size:17.6vh}
-    #canvas{position:fixed;left:0;top:0;right:0;bottom:0;margin:auto}
+    #canvas{position:fixed;left:0;top:0;right:0;bottom:0;margin:auto;z-index:1}
     a{text-decoration:none}
     li,ol,ul{list-style-type:none;padding:0;margin:0}
     .hide{display:none}
     .clear{clear:both}
-    .loading{background-color:#f05a50;height:100%;width:100%}
+    .loading{background-color:#f05a50;height:100%;width:100%;position:relative;z-index:10}
     .loading .main{width:60%;margin:0 auto;color:#fff}
     .loading .main img{width:60%;margin:1rem auto 0}
     .loading .main .title{font-size:.3rem}
@@ -39,6 +39,7 @@
     .landing .logo{width:30%;position:absolute;right:.2rem;top:.2rem}
     .landing .action-2{position:absolute;bottom:.2rem;width:100%}
     .landing .start{width:65%}
+    .landing{position:relative;z-index:2}
     .slideTop{-webkit-animation:slideTop .95s forwards;animation:slideTop .95s forwards}
     .slideBottom{-webkit-animation:slideBottom .95s forwards;animation:slideBottom .95s forwards}
     @-webkit-keyframes slideTop{from{-webkit-transform:translateY(0)}to{-webkit-transform:translateY(-100%)}}
